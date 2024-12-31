@@ -1,4 +1,6 @@
 pip==24.3.1
-streamlit
-openai-whisper
 torch==2.5.1
+streamlit==1.25.0
+ffmpeg-python==0.2.0
+openai-whisper==20230314
+pathlib
