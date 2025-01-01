@@ -6,8 +6,8 @@ from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# .envファイルの読み込み
-load_dotenv()
+# # .envファイルの読み込み
+# load_dotenv()
 
 # # OpenAIクライアントのインスタンスを作成
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
