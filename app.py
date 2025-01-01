@@ -3,6 +3,18 @@ import whisper
 import os
 import subprocess
 from pathlib import Path
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# .envファイルの読み込み
+load_dotenv()
+
+# # OpenAIクライアントのインスタンスを作成
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+# システムメッセージで指示を設定
+instructions = "テキストファイルを関西弁で要約してください"
+
 
 ## 一時保存フォルダ
 UPLOAD_FOLDER = "uploads"
@@ -37,6 +49,8 @@ def transcribe_audio(audio_path):
     result = model.transcribe(audio_path)
     return result["text"]
 
+## video_path初期化
+video_path = None
 ## ファイルアップロード後の処理
 if uploaded_file is not None:
     # ファイルを一時保存
@@ -44,29 +58,38 @@ if uploaded_file is not None:
     with open(video_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
     st.success("動画ファイルのアップロードが完了しました。")
+    # 音声抽出
+    audio_path = os.path.splitext(video_path)[0] + ".wav"
+    extract_audio(video_path, audio_path)
+    st.info("音声の抽出が完了しました。")
 
+    # テキスト変換
+    with st.spinner("音声をテキストに変換中..."):
+        text = transcribe_audio(audio_path)
+    st.success("テキスト変換が完了しました。")
 
-# 音声抽出
-audio_path = os.path.splitext(video_path)[0] + ".wav"
-extract_audio(video_path, audio_path)
-st.info("音声の抽出が完了しました。")
+    # ChatGPT APIにリクエストを送信
+    completion = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": instructions},
+            {"role": "user", "content": text}
+            ]
+        )
+    # 結果を表示
+    st.subheader("変換結果")
+    st.text_area("テキスト", completion.choices[0].message.content, height=300)
 
-# テキスト変換
-with st.spinner("音声をテキストに変換中..."):
-    text = transcribe_audio(audio_path)
-st.success("テキスト変換が完了しました。")
+    # テキストダウンロード
+    st.download_button(
+        label="テキストをダウンロード",
+        data=text,
+        file_name="transcription.txt",
+        mime="text/plain"
+    )
 
-# 結果を表示
-st.subheader("変換結果")
-st.text_area("テキスト", text, height=300)
+    os.remove(video_path)
+    os.remove(audio_path)
+else:
+    st.warning("動画ファイルをアップロードしてください")
 
-# テキストダウンロード
-st.download_button(
-    label="テキストをダウンロード",
-    data=text,
-    file_name="transcription.txt",
-    mime="text/plain"
-)
-
-os.remove(video_path)
-os.remove(audio_path)
