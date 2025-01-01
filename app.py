@@ -33,7 +33,7 @@ def extract_audio(video_path, output_audio_path):
 
 ## whisperで音声データをテキストに変換する関数
 def transcribe_audio(audio_path):
-    model = whisper.load_model("base")
+    model = whisper.load_model("tiny")
     result = model.transcribe(audio_path)
     return result["text"]
 
