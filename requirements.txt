@@ -7,3 +7,5 @@ pathlib
 numpy
 typing-extensions
 pillow==9.5.0
+openai
+python-dotenv
