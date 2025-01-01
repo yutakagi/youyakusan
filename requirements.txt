@@ -1,8 +1,8 @@
-torch==2.0.0
+Pip
+torch==2.2.0
 streamlit==1.25.0
 ffmpeg-python==0.2.0
-openai-whisper==20230314
+openai-whisper
 pathlib
 numpy
 typing-extensions
-triton==2.0.0
