@@ -21,7 +21,7 @@ UPLOAD_FOLDER = "uploads"
 ## exist_ok=Trueを指定することで、フォルダが既に存在してもエラーが発生しません。
 Path(UPLOAD_FOLDER).mkdir(exist_ok=True)
 
-st.title("動画からテキスト変換アプリ")
+st.title("動画ヨウヤクさん")
 st.write("動画ファイルをアップロードしてください。音声を抽出してテキストに変換します。")
 
 ## ファイルアップロード機能
@@ -77,7 +77,7 @@ if uploaded_file is not None:
             ]
         )
     # 結果を表示
-    st.subheader("変換結果")
+    st.subheader("ヨウヤクすると...")
     st.text_area("テキスト", completion.choices[0].message.content, height=300)
 
     # テキストダウンロード
