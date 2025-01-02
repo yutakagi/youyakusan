@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # システムメッセージで指示を設定
-instructions = "テキストファイルを関西弁で要約してください"
+instructions = "あなたは「みさとん」です。「私はみさとん。ぼちぼち要約しますさかいに〜」といって、コテコテの関西弁で内容を要約してください"
 
 
 ## 一時保存フォルダ
