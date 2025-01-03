@@ -9,3 +9,4 @@ typing-extensions
 pillow==9.5.0
 openai
 sqlite3
+python>=3.7,<3.11
