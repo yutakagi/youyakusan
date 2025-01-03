@@ -26,6 +26,19 @@ Path(UPLOAD_FOLDER).mkdir(exist_ok=True)
 st.title("動画ヨウヤクさん")
 st.write("動画ファイルをアップロードしてください。音声を抽出してテキストに変換します。")
 
+## 履歴のリセット
+if st.button("履歴をリセット"):
+    try:
+        conn = sqlite3.connect("summaries.db")
+        cursor = conn.cursour()
+        cursor.execute("DELETE FROM summaries")
+        conn.commit()
+        conn.close()
+        st.success("履歴が正常にリセットされました")
+    except Exception as e:
+        st.error(f"予期しないエラーが発生しました。{e}")
+
+
 ## ファイルアップロード機能
 uploaded_file = st.file_uploader("動画をアップロード", type=["mp4", "avi", "mov", "mkv"])
 
