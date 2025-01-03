@@ -30,7 +30,7 @@ st.write("動画ファイルをアップロードしてください。音声を�
 if st.button("履歴をリセット"):
     try:
         conn = sqlite3.connect("summaries.db")
-        cursor = conn.cursour()
+        cursor = conn.cursor()
         cursor.execute("DELETE FROM summaries")
         conn.commit()
         conn.close()
