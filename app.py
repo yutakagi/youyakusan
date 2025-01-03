@@ -5,9 +5,11 @@ import subprocess
 from pathlib import Path
 from openai import OpenAI
 from dotenv import load_dotenv
+import sqlite3
 
-# # .envファイルの読み込み
-# load_dotenv()
+
+# user_idの仮置き（認証を入れるまで）
+user_id = "みさと"
 
 # # OpenAIクライアントのインスタンスを作成
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
@@ -51,6 +53,23 @@ def transcribe_audio(audio_path):
 
 ## video_path初期化
 video_path = None
+
+# データベース接続
+conn = sqlite3.connect('summaries.db')
+cursor = conn.cursor()
+# テーブル作成
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS summaries (
+        id INTEGER PRIMARY KEY,
+        user_id TEXT,
+        upload_time TIMESTAMP,
+        file_name TEXT,
+        summary TEXT
+    )
+''')
+conn.commit()
+conn.close()
+
 ## ファイルアップロード後の処理
 if uploaded_file is not None:
     # ファイルを一時保存
@@ -87,9 +106,41 @@ if uploaded_file is not None:
         file_name="transcription.txt",
         mime="text/plain"
     )
+    # データベース接続
+    conn = sqlite3.connect('summaries.db')
+    cursor = conn.cursor()
+
+    # テーブル作成
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS summaries (
+            id INTEGER PRIMARY KEY,
+            user_id TEXT,
+            upload_time TIMESTAMP,
+            file_name TEXT,
+            summary TEXT
+        )
+    ''')
+    conn.commit()
+
+
+
+    cursor.execute('''
+        INSERT OR IGNORE INTO summaries (user_id, upload_time, file_name, summary)
+        VALUES (?, datetime('now'), ?, ?)
+    ''', (user_id, uploaded_file.name, completion.choices[0].message.content))
+    conn.commit()
+    conn.close()
 
     os.remove(video_path)
     os.remove(audio_path)
 else:
     st.warning("動画ファイルをアップロードしてください")
 
+## 履歴の取得と表示
+conn = sqlite3.connect('summaries.db')
+cursor = conn.cursor()
+cursor.execute('SELECT upload_time, file_name, summary FROM summaries WHERE user_id = ?', (user_id,))
+records = cursor.fetchall()
+
+for record in records:
+    st.expander(f"{record[0]} - {record[1]}").write(record[2])
