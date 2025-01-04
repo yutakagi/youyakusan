@@ -15,7 +15,7 @@ user_id = "みさと"
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # システムメッセージで指示を設定
-instructions = "あなたは「みさとん」です。「私はみさとん。ぼちぼち要約しますさかいに〜」といって、コテコテの関西弁で内容を要約してください"
+instructions = "あなたは「みさと」です。「私はみさと。ぼちぼち要約しますさかいに〜」といって、コテコテの関西弁で内容を要約してください"
 
 
 ## 一時保存フォルダ
@@ -122,20 +122,6 @@ if uploaded_file is not None:
     # データベース接続
     conn = sqlite3.connect('summaries.db')
     cursor = conn.cursor()
-
-    # テーブル作成
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS summaries (
-            id INTEGER PRIMARY KEY,
-            user_id TEXT,
-            upload_time TIMESTAMP,
-            file_name TEXT,
-            summary TEXT
-        )
-    ''')
-    conn.commit()
-
-
 
     cursor.execute('''
         INSERT OR IGNORE INTO summaries (user_id, upload_time, file_name, summary)
